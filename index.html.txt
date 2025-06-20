@@ -4,10 +4,11 @@
   <meta charset="UTF-8">
   <title>Anterior Femoral Gliding Syndrome 요약</title>
   <style>
-    body { font-family: sans-serif; padding: 20px; line-height: 1.6; }
-    table { border-collapse: collapse; width: 100%; }
-    th, td { border: 1px solid #aaa; padding: 10px; text-align: left; }
-    th { background-color: #f0f0f0; }
+    body { font-family: sans-serif; padding: 20px; line-height: 1.6; background-color: #f9f9f9; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 12px; text-align: left; }
+    th { background-color: #e0e0e0; }
+    h1 { color: #333; }
   </style>
 </head>
 <body>
@@ -15,7 +16,7 @@
   <table>
     <tr><th>항목 번호</th><th>항목명</th><th>설명</th></tr>
     <tr><td>1</td><td>증상</td><td>스쿼트 시 고관절 앞쪽의 통증 및 찝힘</td></tr>
-    <tr><td>2</td><td>원인</td><td>AFGS. 고관절 굽힘 시 대퇴골두가 앞으로 밀리며 앞쪽 구조물에 통증 유발</td></tr>
+    <tr><td>2</td><td>원인</td><td>AFGS. 고관절 굽힘 시 대퇴골두가 뒤로 밀려야 하지만, 앞으로 밀리면서 앞쪽 구조물에 통증 유발</td></tr>
     <tr><td>3</td><td>기여 요인</td><td>Iliopsoas 경직, TFL 타이트, Medial hamstring 우세, Hip lateral rotator 약화</td></tr>
     <tr><td>4</td><td>검사/진단</td><td>능동 고관절 굽힘 시 Groin 통증, ROM 제한, 압박 시 통증 경감</td></tr>
     <tr><td>5</td><td>중재</td><td>Active Hip Flexion, Static Hanging Knee Raise, Backward Rocking, Manual Stretching</td></tr>
