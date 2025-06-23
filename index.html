@@ -39,7 +39,10 @@
 <body>
   <h2>Basic 훈련 템플릿</h2>
 
-  <label>체중 (kg): <input type="number" id="bodyweight" /></label><br />
+  
+<div style="display: flex; gap: 80px; align-items: flex-start;">
+  <div style="flex: 1;">
+<label>체중 (kg): <input type="number" id="bodyweight" /> <span style="margin-left: 10px; font-size: 14px; color: #555;">체중과 1RM을 입력하세요.</span></label><br />
   <label>Bench Press 1RM (kg): <input type="number" id="bp" /></label><br />
   <label>OHP 1RM (kg): <input type="number" id="ohp" /></label><br />
   <label>Squat 1RM (kg): <input type="number" id="squat" /></label><br />
@@ -47,19 +50,19 @@
 
   <div class="section">
     <h3>보조운동 설정</h3>
-    <p>1. 당신은 Pull-up을 6회 이상 할 수 있습니까?</p>
+    <p>1. Pull-up을 6개 이상 할 수 있나요?</p>
     <label><input type="radio" name="pullup" value="yes"> 예 (Y)</label>
     <label><input type="radio" name="pullup" value="no"> 아니오 (N)</label><br />
 
-    <p>2. 당신은 Dips를 10회 이상 수행할 수 있습니까?</p>
+    <p>2. Dips를 10개 이상 할 수 있나요?</p>
     <label><input type="radio" name="dips" value="yes"> 예 (Y)</label>
     <label><input type="radio" name="dips" value="no"> 아니오 (N)</label><br />
 
-    <p>3. 당신은 프리웨이트 로우를 선호하십니까?</p>
+    <p>3. 프리 웨이트 로우를 선호하시나요?</p>
     <label><input type="radio" name="row" value="yes"> 예 (Y)</label>
     <label><input type="radio" name="row" value="no"> 아니오 (N)</label><br />
 
-    <p>4. 당신은 바벨을 이용한 팔 운동을 선호하십니까?</p>
+    <p>4. 바벨을 이용한 팔운동을 선호하시나요?</p>
     <label><input type="radio" name="curl" value="yes"> 예 (Y)</label>
     <label><input type="radio" name="curl" value="no"> 아니오 (N)</label><br />
   </div>
@@ -67,7 +70,7 @@
   <button onclick="generate()">훈련 템플릿 생성</button>
 
   <h3>훈련 템플릿:</h3>
-  <pre id="output"></pre>
+  <div id="output" style="white-space: pre-wrap; background: #f8f8f8; padding: 15px; border-radius: 10px; font-family: 'Noto Sans KR', sans-serif; font-size: 16px; line-height: 1.6;"></div>
 
   <script>
     function roundToHalf(num) {
@@ -109,7 +112,7 @@
         dipsY: "Dips: 3x10–15 (BW)",
         dipsN: `DB Bench Press: 3x10–15 @ ${roundToHalf(bp * 0.25)}kg`,
         rowY_mon: `SA DB Row: 3x10–12 @ ${roundToHalf(bw * 0.3)}kg`,
-        rowY_thu: Math.random() < 0.5 ? `BB Row: 4x6 @ ${roundToHalf(bw * 0.85)}kg` : `Strict Pendlay Row: 4x6 @ ${roundToHalf(bw * 0.7)}kg`,
+        rowY_thu: Math.random() < 0.5 ? `BB Row: 4x6 @ ${roundToHalf(bw * 0.85)}kg` : `Strict Pendlay Row: 4x6 @ <span title="전반적인 등 근육 강화와 허리의 움직임을 통제한 상태로 상부 등 근육을 동원하는 패턴을 강화하기 위함.">${roundToHalf(bw * 0.7)}kg</span>`,
         rowN: `Machine Row: 3x8–10 @ ${roundToHalf(bw * 0.4)}kg`,
         curlY: `BB Curl: 3x12–15 @ ${roundToHalf(bw * 0.25)}kg`,
         curlN: `DB Curl: 3x12–15 @ ${roundToHalf(bw * 0.15)}kg`
@@ -154,7 +157,7 @@
         `Deadlift: 3x5 @ ${deadlift_fri}kg`
       ];
 
-      document.getElementById("output").textContent = `
+      document.getElementById("output").innerHTML = `
 월요일:
 ${mon.join('\n')}
 
@@ -168,6 +171,72 @@ ${thu.join('\n')}
 ${fri.join('\n')}
       `.trim();
     }
-  </script>
+  
+function calculate1RM() {
+  const exercise = document.getElementById("exercise").value;
+  const weight = parseFloat(document.getElementById("calc_weight").value);
+  const reps = parseInt(document.getElementById("calc_reps").value);
+  const resultElem = document.getElementById("calc_result");
+
+  if (isNaN(weight) || isNaN(reps) || reps < 1 || reps > 10) {
+    resultElem.textContent = "올바른 중량과 반복 수(1~10)를 입력하세요.";
+    return;
+  }
+
+  let oneRM = 0;
+
+  if (exercise === "bench") {
+    oneRM = weight * (1 + reps / 30);
+  } else if (exercise === "deadlift") {
+    const NSCA_FACTORS = {
+      1: 1.00, 2: 1.05, 3: 1.08, 4: 1.11, 5: 1.15,
+      6: 1.18, 7: 1.20, 8: 1.25, 9: 1.30, 10: 1.33
+    };
+    oneRM = weight * NSCA_FACTORS[reps];
+  } else if (exercise === "squat") {
+    oneRM = weight / (1.0278 - 0.0278 * reps);
+  }
+
+  resultElem.textContent = "예상 1RM: " + oneRM.toFixed(1) + " kg";
+}
+
+</script>
 </body>
 </html>
+
+  </div>
+  <div style="flex: 1; border-left: 1px solid #ccc; padding-left: 40px;">
+    <h3>1RM 계산기</h3>
+<p style="font-size: 14px; color: #555;">1RM을 측정하지 않았다면 추정치로 대체할 수 있습니다. 계산기를 사용하여 추정 1RM 값을 구한 후, 1RM 칸에 입력해주세요.</p>
+<p style="font-size: 13px; color: #777;">(스쿼트는 NASM 계수, 벤치프레스는 Epley 공식, 데드리프트는 NSCA 계수로 설정하였음)</p>
+    <label>운동 종류:
+      <select id="exercise">
+        <option value="squat">스쿼트</option>
+        <option value="deadlift">데드리프트</option>
+        <option value="bench">벤치프레스</option>
+      </select>
+    </label><br />
+    <label>중량 (kg): <input type="number" id="calc_weight" /></label><br />
+    <label>반복 수 (1–10회): <input type="number" id="calc_reps" /></label><br />
+    <button onclick="calculate1RM()">1RM 계산하기</button>
+    <p id="calc_result" style="margin-top: 10px; font-weight: bold;"></p>
+<div style="margin-top: 30px; font-size: 13px; color: #444; line-height: 1.6;">
+  <strong>하체 보조운동:</strong><br />
+  하체 보조운동은 선택지가 없습니다. 해당 운동들은 화요일과 목요일, 스쿼트와 데드리프트를 수행한 이후에 이어서 수행하세요.<br />
+  - BSS(불가리안 스플릿 스쿼트)를 15회 할 수 있는 무게로 3세트 수행하세요.<br />
+  - Leg Extension을 15회 할 수 있는 무게로 4세트 수행하세요.<br />
+  - Leg Curl을 20회 할 수 있는 무게로 3세트 천천히 수행하세요.
+</div>
+
+<div style="margin-top: 20px; font-size: 13px; color: #444; line-height: 1.6;">
+  <strong>용어 설명:</strong><br />
+  Bench Press (BP): 벤치프레스<br />
+  Overhead Press (OHP): 오버헤드프레스<br />
+  Single Arm (SA): 한 쪽 팔로 수행하는 동작<br />
+  Barbell (BB): 바벨<br />
+  Deadlift (DL): 데드리프트<br />
+  Dumbbell (DB): 덤벨
+</div>
+
+  </div>
+</div>
