@@ -4,22 +4,11 @@
   <meta charset="UTF-8">
   <title>3x5 루틴 생성기</title>
   <style>
-    body {
-      font-family: sans-serif;
-      margin: 40px;
-    }
-    input {
-      margin: 5px;
-      width: 80px;
-    }
-    button {
-      margin-top: 15px;
-    }
-    pre {
-      background: #f8f8f8;
-      padding: 15px;
-      border-radius: 10px;
-    }
+    body { font-family: sans-serif; margin: 40px; }
+    input, select { margin: 5px; width: 80px; }
+    button { margin-top: 15px; }
+    pre { background: #f8f8f8; padding: 15px; border-radius: 10px; white-space: pre-wrap; }
+    .section { margin-top: 30px; padding: 10px; border: 1px solid #ccc; border-radius: 8px; }
   </style>
 </head>
 <body>
@@ -28,6 +17,14 @@
   <label>OHP (kg): <input type="number" id="ohp" /></label><br />
   <label>Squat (kg): <input type="number" id="squat" /></label><br />
   <label>Deadlift (kg): <input type="number" id="deadlift" /></label><br />
+
+  <div class="section">
+    <h3>보조운동 설정</h3>
+    <label>1. 당신은 Pull-up을 6회 이상 할 수 있습니까?</label><br />
+    <label><input type="radio" name="pullup" value="yes"> 예 (Y)</label>
+    <label><input type="radio" name="pullup" value="no"> 아니오 (N)</label>
+  </div>
+
   <button onclick="generate()">루틴 생성</button>
 
   <h3>주간 루틴:</h3>
@@ -44,15 +41,22 @@
       const squat = parseFloat(document.getElementById("squat").value);
       const deadlift = parseFloat(document.getElementById("deadlift").value);
 
+      const pullupAnswer = document.querySelector('input[name="pullup"]:checked');
+
       if (isNaN(bp) || isNaN(ohp) || isNaN(squat) || isNaN(deadlift)) {
-        document.getElementById("output").textContent = "모든 값을 입력하세요.";
+        document.getElementById("output").textContent = "모든 1RM 값을 입력하세요.";
+        return;
+      }
+
+      if (!pullupAnswer) {
+        document.getElementById("output").textContent = "보조운동 질문에 답해주세요.";
         return;
       }
 
       const bp_mon = roundToHalf(bp * 0.8);
       const bp_thu = roundToHalf(bp * 0.87);
       const ohp_mon = roundToHalf(ohp * 0.65);
-      const ohp_thu = roundToHalf(ohp_mon + 2);  // 1~2.5kg 중간값으로 +2 선택
+      const ohp_thu = roundToHalf(ohp_mon + 2); // 1~2.5kg 중간값
 
       const squat_tue = roundToHalf(squat * 0.8);
       const squat_fri = roundToHalf(squat * 0.87);
@@ -60,10 +64,24 @@
       const pausedl = roundToHalf(deadlift * 0.7);
       const deadlift_fri = roundToHalf(deadlift * 0.825);
 
+      // 보조운동 설정
+      let pullMon = "";
+      let pullThu = "";
+
+      if (pullupAnswer.value === "yes") {
+        pullMon = "Pull-up: 4x5–10";
+        pullThu = "Pull-up: 4x5–10";
+      } else {
+        const alt = Math.random() < 0.5 ? "Machine Pull-down: 3x12" : "T-Bar Row: 3x10";
+        pullMon = alt;
+        pullThu = alt;
+      }
+
       const result = `
 월요일:
 BP: 3x5 @ ${bp_mon}kg
 OHP: 3x8 @ ${ohp_mon}kg
+${pullMon}
 
 화요일:
 Squat: 5x5 @ ${squat_tue}kg
@@ -72,14 +90,16 @@ Pause DL: 3x4 @ ${pausedl}kg
 목요일:
 BP: 3x3 or 2 @ ${bp_thu}kg
 OHP: 3x8 @ ${ohp_thu}kg
+${pullThu}
 
 금요일:
 Squat: 3x3 or 2 @ ${squat_fri}kg
 Deadlift: 3x5 @ ${deadlift_fri}kg
 `;
 
-      document.getElementById("output").textContent = result;
+      document.getElementById("output").textContent = result.trim();
     }
   </script>
 </body>
 </html>
+
