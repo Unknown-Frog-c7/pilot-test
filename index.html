@@ -2,90 +2,84 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>Anterior Femoral Gliding Syndrome 요약</title>
+  <title>3x5 루틴 생성기</title>
   <style>
     body {
-      font-family: 'Arial', sans-serif;
-      line-height: 1.6;
-      background-color: #f7f7f7;
-      padding: 30px;
-      max-width: 900px;
-      margin: auto;
+      font-family: sans-serif;
+      margin: 40px;
     }
-    h1 {
-      color: #333;
-      text-align: center;
+    input {
+      margin: 5px;
+      width: 80px;
     }
-    .section {
-      background: white;
-      padding: 20px;
-      margin: 20px 0;
+    button {
+      margin-top: 15px;
+    }
+    pre {
+      background: #f8f8f8;
+      padding: 15px;
       border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-    .section h2 {
-      color: #222;
-      border-bottom: 2px solid #ddd;
-      padding-bottom: 5px;
-    }
-    ul {
-      margin-left: 20px;
     }
   </style>
 </head>
 <body>
-  <h1>Anterior Femoral Gliding Syndrome (AFGS) 요약</h1>
+  <h2>1RM을 입력하세요</h2>
+  <label>Bench Press (kg): <input type="number" id="bp" /></label><br />
+  <label>OHP (kg): <input type="number" id="ohp" /></label><br />
+  <label>Squat (kg): <input type="number" id="squat" /></label><br />
+  <label>Deadlift (kg): <input type="number" id="deadlift" /></label><br />
+  <button onclick="generate()">루틴 생성</button>
 
-  <div class="section">
-    <h2>1. 증상</h2>
-    <ul>
-      <li>스쿼트 시 고관절 앞쪽의 통증 및 찝힘</li>
-    </ul>
-  </div>
+  <h3>주간 루틴:</h3>
+  <pre id="output"></pre>
 
-  <div class="section">
-    <h2>2. 원인</h2>
-    <ul>
-      <li>Anterior Femoral Gliding Syndrome</li>
-      <li>고관절 굽힘 시 대퇴골두가 뒤로 밀려야 하지만, 앞으로 밀리면서 앞쪽 구조물에 통증 및 찝힘 유발</li>
-    </ul>
-  </div>
+  <script>
+    function roundToHalf(num) {
+      return Math.round(num * 2) / 2;
+    }
 
-  <div class="section">
-    <h2>3. 기여 요인</h2>
-    <ul>
-      <li>Iliopsoas의 경직 감소</li>
-      <li>TFL의 타이트함</li>
-      <li>Medial hamstring의 우세 사용</li>
-      <li>Hip lateral rotator의 약화</li>
-    </ul>
-  </div>
+    function generate() {
+      const bp = parseFloat(document.getElementById("bp").value);
+      const ohp = parseFloat(document.getElementById("ohp").value);
+      const squat = parseFloat(document.getElementById("squat").value);
+      const deadlift = parseFloat(document.getElementById("deadlift").value);
 
-  <div class="section">
-    <h2>4. 검사/진단</h2>
-    <ul>
-      <li>천장을 보고 누운 상태에서 능동 고관절 굽힘 시 groin 통증/찝힘 → Positive</li>
-      <li>110도 이상 굽혀지지 않으면 → Positive</li>
-      <li>검사자가 groin 뒤쪽, 안쪽으로 압력을 가하면 통증이 경감되고 ROM이 증가하면 → Positive</li>
-    </ul>
-  </div>
+      if (isNaN(bp) || isNaN(ohp) || isNaN(squat) || isNaN(deadlift)) {
+        document.getElementById("output").textContent = "모든 값을 입력하세요.";
+        return;
+      }
 
-  <div class="section">
-    <h2>5. 중재</h2>
-    <ul>
-      <li>Active Hip Flexion</li>
-      <li>Static Hanging Knee Raise</li>
-      <li>Backward Rocking</li>
-      <li>Manual Stretching</li>
-    </ul>
-  </div>
+      const bp_mon = roundToHalf(bp * 0.8);
+      const bp_thu = roundToHalf(bp * 0.87);
+      const ohp_mon = roundToHalf(ohp * 0.65);
+      const ohp_thu = roundToHalf(ohp_mon + 2);  // 1~2.5kg 중간값으로 +2 선택
 
-  <div class="section">
-    <h2>6. 추천</h2>
-    <ul>
-      <li>Craig test를 먼저 시행해볼 것을 권장</li>
-    </ul>
-  </div>
+      const squat_tue = roundToHalf(squat * 0.8);
+      const squat_fri = roundToHalf(squat * 0.87);
 
+      const pausedl = roundToHalf(deadlift * 0.7);
+      const deadlift_fri = roundToHalf(deadlift * 0.825);
+
+      const result = `
+월요일:
+BP: 3x5 @ ${bp_mon}kg
+OHP: 3x8 @ ${ohp_mon}kg
+
+화요일:
+Squat: 5x5 @ ${squat_tue}kg
+Pause DL: 3x4 @ ${pausedl}kg
+
+목요일:
+BP: 3x3 or 2 @ ${bp_thu}kg
+OHP: 3x8 @ ${ohp_thu}kg
+
+금요일:
+Squat: 3x3 or 2 @ ${squat_fri}kg
+Deadlift: 3x5 @ ${deadlift_fri}kg
+`;
+
+      document.getElementById("output").textContent = result;
+    }
+  </script>
 </body>
 </html>
