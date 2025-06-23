@@ -2,21 +2,23 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>3x5 루틴 생성기</title>
+  <title>Basic 훈련 템플릿</title>
   <style>
     body { font-family: sans-serif; margin: 40px; }
-    input, select { margin: 5px; width: 80px; }
+    input, select { margin: 5px; width: 100px; }
     button { margin-top: 15px; }
     pre { background: #f8f8f8; padding: 15px; border-radius: 10px; white-space: pre-wrap; }
     .section { margin-top: 30px; padding: 10px; border: 1px solid #ccc; border-radius: 8px; }
   </style>
 </head>
 <body>
-  <h2>1RM을 입력하세요</h2>
-  <label>Bench Press (kg): <input type="number" id="bp" /></label><br />
-  <label>OHP (kg): <input type="number" id="ohp" /></label><br />
-  <label>Squat (kg): <input type="number" id="squat" /></label><br />
-  <label>Deadlift (kg): <input type="number" id="deadlift" /></label><br />
+  <h2>Basic 훈련 템플릿</h2>
+
+  <label>체중 (kg): <input type="number" id="bodyweight" /></label><br />
+  <label>Bench Press 1RM (kg): <input type="number" id="bp" /></label><br />
+  <label>OHP 1RM (kg): <input type="number" id="ohp" /></label><br />
+  <label>Squat 1RM (kg): <input type="number" id="squat" /></label><br />
+  <label>Deadlift 1RM (kg): <input type="number" id="deadlift" /></label><br />
 
   <div class="section">
     <h3>보조운동 설정</h3>
@@ -36,15 +38,15 @@
     }
 
     function generate() {
+      const bodyweight = parseFloat(document.getElementById("bodyweight").value);
       const bp = parseFloat(document.getElementById("bp").value);
       const ohp = parseFloat(document.getElementById("ohp").value);
       const squat = parseFloat(document.getElementById("squat").value);
       const deadlift = parseFloat(document.getElementById("deadlift").value);
-
       const pullupAnswer = document.querySelector('input[name="pullup"]:checked');
 
-      if (isNaN(bp) || isNaN(ohp) || isNaN(squat) || isNaN(deadlift)) {
-        document.getElementById("output").textContent = "모든 1RM 값을 입력하세요.";
+      if ([bp, ohp, squat, deadlift, bodyweight].some(v => isNaN(v))) {
+        document.getElementById("output").textContent = "모든 1RM과 체중을 입력하세요.";
         return;
       }
 
@@ -56,7 +58,7 @@
       const bp_mon = roundToHalf(bp * 0.8);
       const bp_thu = roundToHalf(bp * 0.87);
       const ohp_mon = roundToHalf(ohp * 0.65);
-      const ohp_thu = roundToHalf(ohp_mon + 2); // 1~2.5kg 중간값
+      const ohp_thu = roundToHalf(ohp_mon + 2);
 
       const squat_tue = roundToHalf(squat * 0.8);
       const squat_fri = roundToHalf(squat * 0.87);
@@ -67,12 +69,14 @@
       // 보조운동 설정
       let pullMon = "";
       let pullThu = "";
+      const accessoryWeight = roundToHalf(bodyweight * 0.4);
 
       if (pullupAnswer.value === "yes") {
         pullMon = "Pull-up: 4x5–10";
         pullThu = "Pull-up: 4x5–10";
       } else {
-        const alt = Math.random() < 0.5 ? "Machine Pull-down: 3x12" : "T-Bar Row: 3x10";
+        const alt = Math.random() < 0.5 ? `Machine Pull-down: 3x12 @ ${accessoryWeight}kg`
+                                       : `T-Bar Row: 3x10 @ ${accessoryWeight}kg`;
         pullMon = alt;
         pullThu = alt;
       }
