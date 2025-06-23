@@ -3,12 +3,37 @@
 <head>
   <meta charset="UTF-8">
   <title>Basic 훈련 템플릿</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
   <style>
-    body { font-family: sans-serif; margin: 40px; }
-    input, select { margin: 5px; width: 100px; }
-    button { margin-top: 15px; }
-    pre { background: #f8f8f8; padding: 15px; border-radius: 10px; white-space: pre-wrap; }
-    .section { margin-top: 30px; padding: 10px; border: 1px solid #ccc; border-radius: 8px; }
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      margin: 40px;
+    }
+    input, select {
+      margin: 5px;
+      width: 120px;
+      font-size: 16px;
+    }
+    button {
+      margin-top: 15px;
+      font-size: 16px;
+      padding: 6px 12px;
+    }
+    pre {
+      background: #f8f8f8;
+      padding: 15px;
+      border-radius: 10px;
+      white-space: pre-wrap;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+    .section {
+      margin-top: 30px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
   </style>
 </head>
 <body>
@@ -22,14 +47,26 @@
 
   <div class="section">
     <h3>보조운동 설정</h3>
-    <label>1. 당신은 Pull-up을 6회 이상 할 수 있습니까?</label><br />
+    <p>1. 당신은 Pull-up을 6회 이상 할 수 있습니까?</p>
     <label><input type="radio" name="pullup" value="yes"> 예 (Y)</label>
-    <label><input type="radio" name="pullup" value="no"> 아니오 (N)</label>
+    <label><input type="radio" name="pullup" value="no"> 아니오 (N)</label><br />
+
+    <p>2. 당신은 Dips를 10회 이상 수행할 수 있습니까?</p>
+    <label><input type="radio" name="dips" value="yes"> 예 (Y)</label>
+    <label><input type="radio" name="dips" value="no"> 아니오 (N)</label><br />
+
+    <p>3. 당신은 프리웨이트 로우를 선호하십니까?</p>
+    <label><input type="radio" name="row" value="yes"> 예 (Y)</label>
+    <label><input type="radio" name="row" value="no"> 아니오 (N)</label><br />
+
+    <p>4. 당신은 바벨을 이용한 팔 운동을 선호하십니까?</p>
+    <label><input type="radio" name="curl" value="yes"> 예 (Y)</label>
+    <label><input type="radio" name="curl" value="no"> 아니오 (N)</label><br />
   </div>
 
-  <button onclick="generate()">루틴 생성</button>
+  <button onclick="generate()">훈련 템플릿 생성</button>
 
-  <h3>주간 루틴:</h3>
+  <h3>훈련 템플릿:</h3>
   <pre id="output"></pre>
 
   <script>
@@ -37,24 +74,48 @@
       return Math.round(num * 2) / 2;
     }
 
+    function getAnswer(name) {
+      const selected = document.querySelector(`input[name="${name}"]:checked`);
+      return selected ? selected.value : null;
+    }
+
     function generate() {
-      const bodyweight = parseFloat(document.getElementById("bodyweight").value);
+      const bw = parseFloat(document.getElementById("bodyweight").value);
       const bp = parseFloat(document.getElementById("bp").value);
       const ohp = parseFloat(document.getElementById("ohp").value);
       const squat = parseFloat(document.getElementById("squat").value);
-      const deadlift = parseFloat(document.getElementById("deadlift").value);
-      const pullupAnswer = document.querySelector('input[name="pullup"]:checked');
+      const dl = parseFloat(document.getElementById("deadlift").value);
 
-      if ([bp, ohp, squat, deadlift, bodyweight].some(v => isNaN(v))) {
+      const answers = {
+        pullup: getAnswer("pullup"),
+        dips: getAnswer("dips"),
+        row: getAnswer("row"),
+        curl: getAnswer("curl")
+      };
+
+      if ([bw, bp, ohp, squat, dl].some(x => isNaN(x))) {
         document.getElementById("output").textContent = "모든 1RM과 체중을 입력하세요.";
         return;
       }
 
-      if (!pullupAnswer) {
-        document.getElementById("output").textContent = "보조운동 질문에 답해주세요.";
+      if (Object.values(answers).some(x => x === null)) {
+        document.getElementById("output").textContent = "모든 질문에 답해주세요.";
         return;
       }
 
+      const acc = {
+        pullupY: "Pull-up: 4x5–10",
+        pullupN: Math.random() < 0.5 ? `Machine Pull-down: 3x12 @ ${roundToHalf(bw * 0.4)}kg` : `T-Bar Row: 3x10 @ ${roundToHalf(bw * 0.4)}kg`,
+        dipsY: "Dips: 3x10–15 (BW)",
+        dipsN: `DB Bench Press: 3x10–15 @ ${roundToHalf(bp * 0.25)}kg`,
+        rowY_mon: `SA DB Row: 3x10–12 @ ${roundToHalf(bw * 0.3)}kg`,
+        rowY_thu: Math.random() < 0.5 ? `BB Row: 4x6 @ ${roundToHalf(bw * 0.85)}kg` : `Strict Pendlay Row: 4x6 @ ${roundToHalf(bw * 0.7)}kg`,
+        rowN: `Machine Row: 3x8–10 @ ${roundToHalf(bw * 0.4)}kg`,
+        curlY: `BB Curl: 3x12–15 @ ${roundToHalf(bw * 0.25)}kg`,
+        curlN: `DB Curl: 3x12–15 @ ${roundToHalf(bw * 0.15)}kg`
+      };
+
+      // 메인 루틴
       const bp_mon = roundToHalf(bp * 0.8);
       const bp_thu = roundToHalf(bp * 0.87);
       const ohp_mon = roundToHalf(ohp * 0.65);
@@ -63,47 +124,50 @@
       const squat_tue = roundToHalf(squat * 0.8);
       const squat_fri = roundToHalf(squat * 0.87);
 
-      const pausedl = roundToHalf(deadlift * 0.7);
-      const deadlift_fri = roundToHalf(deadlift * 0.825);
+      const pausedl = roundToHalf(dl * 0.7);
+      const deadlift_fri = roundToHalf(dl * 0.825);
 
-      // 보조운동 설정
-      let pullMon = "";
-      let pullThu = "";
-      const accessoryWeight = roundToHalf(bodyweight * 0.4);
+      const mon = [
+        `BP: 3x5 @ ${bp_mon}kg`,
+        `OHP: 3x8 @ ${ohp_mon}kg`,
+        answers.pullup === "yes" ? acc.pullupY : acc.pullupN,
+        answers.dips === "yes" ? acc.dipsY : acc.dipsN,
+        answers.row === "yes" ? acc.rowY_mon : acc.rowN,
+        answers.curl === "yes" ? acc.curlY : acc.curlN
+      ];
 
-      if (pullupAnswer.value === "yes") {
-        pullMon = "Pull-up: 4x5–10";
-        pullThu = "Pull-up: 4x5–10";
-      } else {
-        const alt = Math.random() < 0.5 ? `Machine Pull-down: 3x12 @ ${accessoryWeight}kg`
-                                       : `T-Bar Row: 3x10 @ ${accessoryWeight}kg`;
-        pullMon = alt;
-        pullThu = alt;
-      }
+      const tue = [
+        `Squat: 5x5 @ ${squat_tue}kg`,
+        `Pause DL: 3x4 @ ${pausedl}kg`
+      ];
 
-      const result = `
+      const thu = [
+        `BP: 3x3 or 2 @ ${bp_thu}kg`,
+        `OHP: 3x8 @ ${ohp_thu}kg`,
+        answers.pullup === "yes" ? acc.pullupY : acc.pullupN,
+        answers.row === "yes" ? acc.rowY_thu : acc.rowN,
+        answers.curl === "yes" ? acc.curlY : acc.curlN
+      ];
+
+      const fri = [
+        `Squat: 3x3 or 2 @ ${squat_fri}kg`,
+        `Deadlift: 3x5 @ ${deadlift_fri}kg`
+      ];
+
+      document.getElementById("output").textContent = `
 월요일:
-BP: 3x5 @ ${bp_mon}kg
-OHP: 3x8 @ ${ohp_mon}kg
-${pullMon}
+${mon.join('\n')}
 
 화요일:
-Squat: 5x5 @ ${squat_tue}kg
-Pause DL: 3x4 @ ${pausedl}kg
+${tue.join('\n')}
 
 목요일:
-BP: 3x3 or 2 @ ${bp_thu}kg
-OHP: 3x8 @ ${ohp_thu}kg
-${pullThu}
+${thu.join('\n')}
 
 금요일:
-Squat: 3x3 or 2 @ ${squat_fri}kg
-Deadlift: 3x5 @ ${deadlift_fri}kg
-`;
-
-      document.getElementById("output").textContent = result.trim();
+${fri.join('\n')}
+      `.trim();
     }
   </script>
 </body>
 </html>
-
